@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AC</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eaf0f8;--panel:#fff;--panel2:#f1f5fb;--line:#d3dcea;--tx:#0d1b3d;--mut:#5a6784;--or:#d95a00;--onor:#fff;--ok:#118a4a;--bad:#d6343a;--warn:#a56a00;--hdr:#0a1f4d;--hdrtx:#fff;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#07142e;--panel:#0f2247;--panel2:#152c58;--line:#25407a;--tx:#fff;--mut:#9fb0d3;--or:#ff7a1a;--onor:#000;--ok:#3ddc84;--bad:#ff5252;--warn:#ffc247;--hdr:#050f24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#07142e;--panel:#0f2247;--panel2:#152c58;--line:#25407a;--tx:#fff;--mut:#9fb0d3;--or:#ff7a1a;--onor:#000;--ok:#3ddc84;--bad:#ff5252;--warn:#ffc247;--hdr:#050f24;color-scheme:dark}
+html{background:var(--bg)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--hdr)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font:400 15px/1.5 Barlow,system-ui,sans-serif}
+h1,h2,h3,.disp{font-family:"Barlow Semi Condensed",system-ui,sans-serif;font-weight:700;margin:0}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--hdr);border-bottom:3px solid var(--or)}
+.brand{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 8px;padding:10px 16px}
+.brand b{font:700 24px "Barlow Semi Condensed",sans-serif;letter-spacing:.5px;color:var(--hdrtx)}.brand b i{color:var(--or);font-style:normal}
+.status{font-size:13px;color:#b8c6e6}.tg{margin-left:auto;background:none;border:1px solid #4a6196;color:#fff;border-radius:20px;padding:4px 12px;font:600 14px "Barlow Semi Condensed",sans-serif;cursor:pointer}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--bad);margin-right:6px}.dot.on{background:var(--ok)}
+nav{display:flex;gap:4px;overflow-x:auto;padding:0 12px}
+nav button{background:none;border:0;border-bottom:3px solid transparent;color:#b8c6e6;font:600 16px "Barlow Semi Condensed",sans-serif;padding:10px 12px;white-space:nowrap;cursor:pointer}
+nav button.on{color:#fff;border-color:var(--or)}
+main{max-width:980px;margin:0 auto;padding:16px}
+.crumbs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;font-size:13px;color:var(--mut)}
+.crumbs span{padding:2px 8px;border:1px solid var(--line);border-radius:20px}.crumbs span.on{border-color:var(--or);color:var(--tx)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{background:var(--panel2);border:1px solid var(--line);color:var(--tx);border-radius:20px;padding:6px 14px;cursor:pointer;font:inherit}
+.chip.on{background:var(--or);border-color:var(--or);color:var(--onor);font-weight:500}
+input,select,textarea{background:var(--panel2);border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:9px 10px;font:inherit;min-width:0}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--or);outline-offset:1px}
+input[type=number]{width:100%}
+.btn{background:var(--or);color:var(--onor);border:0;border-radius:8px;padding:10px 16px;font:700 15px "Barlow Semi Condensed",sans-serif;cursor:pointer}
+.btn.ghost{background:none;color:var(--tx);border:1px solid var(--line)}
+.empty{border:1px dashed var(--line);border-radius:10px;padding:20px;color:var(--mut)}.empty b{color:var(--tx);display:block;margin-bottom:4px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:420px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--mut);font-weight:500;font-size:13px}
+td.best{color:var(--or);font-weight:700}
+.tag{font-size:12px;padding:2px 8px;border-radius:20px;border:1px solid}
+.tag.v{color:var(--ok);border-color:var(--ok)}.tag.t{color:var(--warn);border-color:var(--warn)}.tag.n{color:var(--mut);border-color:var(--line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.big{font:700 34px "Barlow Semi Condensed",sans-serif}.pos{color:var(--ok)}.neg{color:var(--bad)}
+label{font-size:13px;color:var(--mut);display:block;margin-bottom:3px}
+.oc{display:grid;grid-template-columns:1.1fr 1fr 1fr 1fr 1fr 32px;gap:6px;margin-bottom:6px}
+@media(max-width:560px){.oc{grid-template-columns:1fr 1fr 32px}}
+.note{font-size:13px;color:var(--mut)}pre{background:var(--panel2);padding:10px;border-radius:8px;overflow-x:auto;font-size:12px;margin:8px 0}
+.ev{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;color:var(--tx);font:inherit;cursor:pointer}
+.ev:hover{border-color:var(--or)}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><b>Ambroh<i>SP</i></b><button id="theme" class="tg" aria-label="Switch between light and dark mode"></button><span class="status"><span class="dot" id="dot"></span><span id="st">No data source connected</span></span></div>
+ <nav id="nav"></nav>
+</header>
+<main id="app"></main>
+
+<script>
+/* ---------- State ---------- */
+const S={view:'sports',sport:'all',comp:'all',q:'',eventId:null,cat:'All markets',marketIdx:null,
+ sports:[],events:[],loadedAt:null,
+ cfg:{base:'',key:'',theme:'auto',freshSecs:60,minPct:0,bookmakers:{},hiddenSports:{},refreshSecs:30},
+ scan:{sort:'pct',book:'all',cat:'all',minPct:0},logs:[]};
+try{const c=localStorage.getItem('ambrohsp.cfg');if(c)Object.assign(S.cfg,JSON.parse(c))}catch(e){}
+S.cfg.base='';S.cfg.refreshSecs=Math.max(300,S.cfg.refreshSecs||300); // ignore any old saved backend URL
+if(!S.cfg.key)S.cfg.key='mnbvcxzlkjhgfdsa'; // default access key; change it on the Connection tab
+const save=()=>{try{localStorage.setItem('ambrohsp.cfg',JSON.stringify(S.cfg))}catch(e){}};
+const log=m=>{S.logs.unshift(new Date().toLocaleTimeString()+'  '+m);S.logs=S.logs.slice(0,50)};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ksh=n=>'KSh '+Number(n).toLocaleString('en-KE',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+/* ---------- Normalised data contract ----------
+ events:[{id,sport,competition,name,start,live,markets:[{key,name,line,settlement:'standard'|'special',
+   outcomes:[{sel, prices:[{bookmaker,price,updated}]}]}]}]
+ A server-side adapter translates the provider (PropLine) into this shape, so more providers can be added later. */
+
+/* ---------- Dynamic categories (derived from market keys/names, never a fixed market list) ---------- */
+function categoryOf(m){const t=(m.key+' '+m.name).toLowerCase();
+ if(/player|prop/.test(t))return 'Player markets';
+ if(/corner/.test(t))return 'Corners';if(/card|booking/.test(t))return 'Cards';
+ if(/half|quarter|period|set winner|1st|2nd/.test(t))return 'Half-time & periods';
+ if(/handicap|spread/.test(t))return 'Handicaps';
+ if(/total|over|under|goals|points|games/.test(t))return 'Totals';
+ if(/h2h|winner|1x2|moneyline|double chance|draw no bet|match result/.test(t))return 'Main markets';
+ return 'Special markets'}
+const cats=ms=>[...new Set(ms.map(categoryOf))].sort();
+
+/* ---------- Universal arbitrage engine ---------- */
+function arb(outcomes,total){ // outcomes:[{sel,bookmaker,odds,min,max}]
+ const ok=outcomes.length>=2&&outcomes.every(o=>o.odds>1);
+ if(!ok)return null;
+ const inv=outcomes.reduce((a,o)=>a+1/o.odds,0),margin=(1-inv)*100;
+ const legs=outcomes.map(o=>{const stake=total*(1/o.odds)/inv;return{...o,stake,ret:stake*o.odds,
+  limit:(o.min&&stake<o.min)?'Below minimum stake':(o.max&&stake>o.max)?'Above maximum stake':''}});
+ const ret=legs[0].ret; // equal returns by construction
+ return{inv,margin,legs,payout:ret,profit:ret-total,pct:(ret-total)/total*100,exists:inv<1}}
+
+function status(m,res){ // theoretical vs verified
+ if(!res||!res.exists||m.exhaustive===false)return'n';
+ return m.settlement==='standard'?'v':'t'}
+
+/* ---------- Scanner over loaded data ---------- */
+function scan(){const out=[],now=Date.now(),fresh=S.cfg.freshSecs*1000;
+ S.events.forEach(ev=>{if(S.sport!=='all'&&ev.sport!==S.sport)return;if(S.comp!=='all'&&ev.competition!==S.comp)return;
+  (ev.markets||[]).forEach(m=>{if(m.exhaustive===false)return;const c=categoryOf(m);if(S.scan.cat!=='all'&&c!==S.scan.cat)return;
+   const best=m.outcomes.map(o=>{const live=o.prices.filter(p=>now-new Date(p.updated).getTime()<=fresh&&S.cfg.bookmakers[p.bookmaker]!==false);
+    return live.sort((a,b)=>b.price-a.price)[0]&&{sel:o.sel,...live[0]}});
+   if(best.some(b=>!b))return;
+   if(S.scan.book!=='all'&&!best.some(b=>b.bookmaker===S.scan.book))return;
+   const r=arb(best.map(b=>({sel:b.sel,bookmaker:b.bookmaker,odds:b.price})),1000);
+   if(r&&r.exists&&r.margin>=Math.max(S.scan.minPct,S.cfg.minPct))out.push({ev,m,c,r,st:status(m,r),
+    t:Math.max(...best.map(b=>new Date(b.updated).getTime()))})})});
+ const k={pct:(a,b)=>b.r.margin-a.r.margin,time:(a,b)=>new Date(a.ev.start)-new Date(b.ev.start),sport:(a,b)=>a.ev.sport.localeCompare(b.ev.sport)};
+ return out.sort(k[S.scan.sort])}
+
+/* ---------- Access key (single user) ---------- */
+const authHeaders=async()=>{if(!S.cfg.key)throw new Error('Add your access key in the Connection tab');return{'x-app-key':S.cfg.key}};
+const grab=()=>{S.cfg.base=$('base').value.trim();S.cfg.key=$('akey').value.trim();save()};
+
+/* ---------- Direct PropLine mode (key lives in this file) ---------- */
+const AC_KEY='517e2b77e0445a1971c69aa54dff26ca';
+const AC_BASE='https://api.prop-line.com/v1';
+const AC_SPORTS=['soccer_epl','basketball_nba','tennis']; // 1 request per sport per refresh
+const AC_MARKETS='h2h,spreads,totals';
+const acSpecial=p=>p!=null&&(Number.isInteger(p)||Math.abs(p*4%2)===1);
+function acNormalize(ev,title){
+ const groups=new Map();
+ (ev.bookmakers||[]).forEach(bk=>(bk.markets||[]).forEach(m=>(m.outcomes||[]).forEach(o=>{
+  const line=o.point??null,gl=m.key==='spreads'&&line!=null?Math.abs(line):line,gk=m.key+'|'+gl;
+  if(!groups.has(gk))groups.set(gk,{key:m.key,line:gl,outs:new Map()});
+  const g=groups.get(gk);
+  const sel=[o.description,o.name].filter(Boolean).join(' ')+(m.key==='spreads'&&line!=null?' ('+(line>0?'+':'')+line+')':'');
+  if(!g.outs.has(sel))g.outs.set(sel,[]);
+  g.outs.get(sel).push({bookmaker:bk.title||bk.key,price:o.price,updated:bk.last_update||m.last_update||new Date().toISOString()})})));
+ const markets=[];
+ groups.forEach(g=>{if(g.outs.size<2)return;
+  const label={h2h:'Match winner',spreads:'Handicap',totals:'Total'}[g.key]||g.key.replace(/_/g,' ');
+  markets.push({key:g.key,name:g.line!=null?label+' '+g.line:label,line:g.line,settlement:acSpecial(g.line)?'special':'standard',
+   outcomes:[...g.outs].map(([sel,prices])=>({sel,prices}))})});
+ return{id:String(ev.id),sport:title,competition:title,
+  name:ev.home_team&&ev.away_team?ev.home_team+' vs '+ev.away_team:(ev.name||String(ev.id)),
+  start:ev.commence_time,live:ev.commence_time?new Date(ev.commence_time)<=new Date():false,markets}}
+async function acFetch(path,params){
+ const u=new URL(AC_BASE+path);Object.entries(params||{}).forEach(([k,v])=>u.searchParams.set(k,v));u.searchParams.set('apiKey',AC_KEY);
+ const r=await fetch(u);log(r.status+' '+path+' (left today: '+(r.headers.get('X-Daily-Remaining')||'?')+')');
+ if(!r.ok)throw new Error('HTTP '+r.status+' '+path);return r.json()}
+async function acLoad(){
+ const titles={},events=[],limitations=[];
+ try{(await acFetch('/sports')).forEach(s=>titles[s.key]=s.title)}catch(e){limitations.push('Sport list: '+e.message)}
+ for(const sp of AC_SPORTS){
+  try{const d=await acFetch('/sports/'+sp+'/odds',{markets:AC_MARKETS});
+   (Array.isArray(d)?d:(d.events||[])).forEach(ev=>events.push(acNormalize(ev,titles[sp]||sp)))}
+  catch(e){limitations.push(sp+' skipped: '+e.message)}}
+ if(!events.length)throw new Error(limitations[0]||'No events returned');
+ return{sports:[...new Set(events.map(e=>e.sport))],events,limitations}}
+
+/* ---------- Loading ---------- */
+async function load(){
+ if(S.cfg.base){ // optional external backend
+  try{const u=S.cfg.base.replace(/\/$/,'')+'/normalized';log('Requesting '+u);const r=await fetch(u,{headers:await authHeaders()});
+   if(!r.ok)throw new Error('HTTP '+r.status);return ingest(await r.json())}
+  catch(e){log('Load failed: '+e.message);return alert('Could not reach your backend ('+e.message+')')}}
+ try{log('Requesting odds from PropLine');ingest(await acLoad());return}
+ catch(e){log('Direct load failed: '+e.message+' (if this says Failed to fetch, the browser blocked it; use the file loader)')}
+ try{const r=await fetch('./normalized.json?t='+Date.now());if(r.ok){ingest(await r.json());log('Loaded normalized.json');return}}catch(e){}
+ alert('Could not load odds. Open the Connection tab > System log for the reason.')}
+function ingest(d){
+ S.events=Array.isArray(d.events)?d.events:[];
+ const names=new Set([...(d.sports||[]).map(s=>s.name||s),...S.events.map(e=>e.sport)]);
+ S.sports=[...names].sort();S.loadedAt=new Date();
+ S.events.forEach(e=>(e.markets||[]).forEach(m=>m.outcomes.forEach(o=>o.prices.forEach(p=>{if(!(p.bookmaker in S.cfg.bookmakers))S.cfg.bookmakers[p.bookmaker]=true}))));
+ save();log('Loaded '+S.events.length+' events, '+S.sports.length+' sports');(d.limitations||[]).forEach(l=>log('Limit: '+l));render()}
+
+/* ---------- Views ---------- */
+const TABS=[['sports','Sports'],['event','Markets'],['scanner','Scanner'],['calc','Calculator'],['admin','Settings'],['connect','Connection']];
+const FLOW=['Sports','Competition','Event','Market','Odds comparison','Arbitrage'];
+function crumbs(){const i={sports:1,event:S.marketIdx!=null?5:3,scanner:5,calc:5}[S.view]||0;
+ return S.view==='admin'||S.view==='connect'?'':'<div class="crumbs">'+FLOW.map((f,j)=>`<span class="${j<i?'on':''}">${f}</span>`).join('')+'</div>'}
+const emptyData=()=>`<div class="empty"><b>No odds loaded</b>AmbrohSP shows only real data from your connected provider. Connect your backend in the Connection tab, then press Refresh. Nothing is simulated.<div class="row" style="margin-top:12px"><button class="btn" data-go="connect">Open Connection</button></div></div>`;
+
+function vSports(){
+ let h='<h2 style="font-size:26px;margin-bottom:10px">Choose a sport</h2><div class="row" style="margin-bottom:12px"><input id="q" placeholder="Search sport, team or competition" value="'+esc(S.q)+'" style="flex:1"><button class="btn" id="refresh">Refresh</button></div>';
+ if(!S.events.length)return h+emptyData();
+ const q=S.q.toLowerCase();
+ h+='<div class="row" style="margin-bottom:12px"><button class="chip '+(S.sport==='all'?'on':'')+'" data-sport="all">All sports</button>'+
+  S.sports.filter(s=>!S.cfg.hiddenSports[s]&&(!q||s.toLowerCase().includes(q))).map(s=>`<button class="chip ${S.sport===s?'on':''}" data-sport="${esc(s)}">${esc(s)}</button>`).join('')+'</div>';
+ const base=S.events.filter(e=>(S.sport==='all'||e.sport===S.sport)&&!S.cfg.hiddenSports[e.sport]);
+ const comps=[...new Set(base.map(e=>e.competition))].sort();
+ h+='<div class="row" style="margin-bottom:12px"><select id="comp"><option value="all">All competitions</option>'+comps.map(c=>`<option ${S.comp===c?'selected':''}>${esc(c)}</option>`).join('')+'</select></div>';
+ const list=base.filter(e=>(S.comp==='all'||e.competition===S.comp)&&(!q||(e.name+e.competition+e.sport).toLowerCase().includes(q)))
+  .sort((a,b)=>new Date(a.start)-new Date(b.start));
+ if(!list.length)return h+'<div class="empty"><b>No events match</b>Clear the search or choose another sport.</div>';
+ return h+list.map(e=>`<button class="ev" data-ev="${esc(e.id)}"><span><b>${esc(e.name)}</b><br><span class="note">${esc(e.sport)} &middot; ${esc(e.competition)}</span></span><span class="note">${e.live?'<span class="pos">Live</span><br>':''}${new Date(e.start).toLocaleString()}</span></button>`).join('')}
+
+function vEvent(){
+ const ev=S.events.find(e=>e.id===S.eventId);
+ if(!ev)return '<div class="empty"><b>No event selected</b>Pick an event from the Sports tab to see its markets.<div class="row" style="margin-top:12px"><button class="btn" data-go="sports">Browse sports</button></div></div>';
+ const cs=cats(ev.markets||[]);
+ let h=`<h2 style="font-size:26px">${esc(ev.name)}</h2><p class="note">${esc(ev.sport)} &middot; ${esc(ev.competition)}</p><div class="row" style="margin-bottom:12px"><button class="chip ${S.cat==='All markets'?'on':''}" data-cat="All markets">All markets</button>`+cs.map(c=>`<button class="chip ${S.cat===c?'on':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('')+'</div>';
+ const ms=(ev.markets||[]).map((m,i)=>({m,i})).filter(x=>S.cat==='All markets'||categoryOf(x.m)===S.cat);
+ if(!ms.length)return h+'<div class="empty"><b>No markets in this category</b>The provider returned no odds for it on this event.</div>';
+ const now=Date.now();
+ return h+ms.map(({m,i})=>{
+  const rows=[...new Set(m.outcomes.flatMap(o=>o.prices.map(p=>p.bookmaker)))];
+  const best=m.outcomes.map(o=>Math.max(...o.prices.map(p=>p.price)));
+  const low=m.outcomes.map(o=>Math.min(...o.prices.map(p=>p.price)));
+  const bestPrices=m.outcomes.map(o=>[...o.prices].sort((a,b)=>b.price-a.price)[0]);
+  const r=arb(bestPrices.map((p,k)=>({sel:m.outcomes[k].sel,bookmaker:p.bookmaker,odds:p.price})),1000);
+  const st=status(m,r);
+  return `<div class="card"><div class="row" style="justify-content:space-between"><h3 style="font-size:19px">${esc(m.name)}${m.line!=null?' '+esc(m.line):''}</h3>
+   <span class="tag ${st}">${st==='v'?'Verified arbitrage':st==='t'?'Theoretical only':'No arbitrage'}</span></div>
+   <div class="tw"><table><tr><th>Bookmaker</th>${m.outcomes.map(o=>`<th>${esc(o.sel)}</th>`).join('')}<th>Updated</th></tr>
+   ${rows.map(b=>{const ps=m.outcomes.map(o=>o.prices.find(p=>p.bookmaker===b));const u=Math.max(...ps.filter(Boolean).map(p=>new Date(p.updated)));
+    return `<tr><td>${esc(b)}</td>${ps.map((p,k)=>p?`<td class="${p.price===best[k]?'best':''}">${p.price.toFixed(2)}</td>`:'<td class="note">n/a</td>').join('')}<td class="note">${new Date(u).toLocaleTimeString()}</td></tr>`}).join('')}
+   <tr><td class="note">Lowest</td>${low.map(x=>`<td class="note">${x.toFixed(2)}</td>`).join('')}<td></td></tr></table></div>
+   ${r&&r.exists&&m.exhaustive!==false?`<div class="row" style="margin-top:10px"><span class="pos">Margin ${r.margin.toFixed(2)}%</span><button class="btn" data-calc="${esc(ev.id)}|${i}">Calculate stakes</button></div>`:'<p class="note">Best prices across bookmakers do not form an arbitrage.</p>'}
+   ${m.settlement!=='standard'?'<p class="note">This market can push, void or settle in halves, so it is never marked verified.</p>':''}</div>`}).join('')}
+
+function vScanner(){
+ const books=Object.keys(S.cfg.bookmakers).sort(),all=S.events.flatMap(e=>(e.markets||[]).map(categoryOf)),cs=[...new Set(all)].sort();
+ let h=`<h2 style="font-size:26px;margin-bottom:10px">Arbitrage scanner</h2><div class="card"><div class="grid">
+ <div><label>Sport</label><select id="ssport"><option value="all">All sports</option>${S.sports.map(s=>`<option ${S.sport===s?'selected':''}>${esc(s)}</option>`).join('')}</select></div>
+ <div><label>Bookmaker</label><select id="sbook"><option value="all">Any</option>${books.map(b=>`<option ${S.scan.book===b?'selected':''}>${esc(b)}</option>`).join('')}</select></div>
+ <div><label>Market category</label><select id="scat"><option value="all">All</option>${cs.map(c=>`<option ${S.scan.cat===c?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
+ <div><label>Minimum arbitrage %</label><input type="number" id="smin" step="0.1" min="0" value="${S.scan.minPct}"></div>
+ <div><label>Sort by</label><select id="ssort"><option value="pct" ${S.scan.sort==='pct'?'selected':''}>Highest arbitrage %</option><option value="time" ${S.scan.sort==='time'?'selected':''}>Earliest event</option><option value="sport" ${S.scan.sort==='sport'?'selected':''}>Sport</option></select></div></div></div>`;
+ if(!S.events.length)return h+emptyData();
+ const res=scan();
+ if(!res.length)return h+`<div class="empty"><b>No live opportunities</b>Nothing currently passes your filters. Prices older than ${S.cfg.freshSecs}s are ignored, and stale opportunities drop off automatically.</div>`;
+ return h+res.map(x=>`<div class="card"><div class="row" style="justify-content:space-between"><b>${esc(x.ev.name)}</b><span class="tag ${x.st}">${x.st==='v'?'Verified':'Theoretical'}</span></div>
+  <p class="note">${esc(x.ev.sport)} &middot; ${esc(x.ev.competition)} &middot; ${esc(x.m.name)}${x.m.line!=null?' '+esc(x.m.line):''} &middot; ${new Date(x.ev.start).toLocaleString()}</p>
+  <div class="tw"><table><tr><th>Selection</th><th>Bookmaker</th><th>Odds</th><th>Stake on KSh 1,000</th></tr>${x.r.legs.map(l=>`<tr><td>${esc(l.sel)}</td><td>${esc(l.bookmaker)}</td><td>${l.odds.toFixed(2)}</td><td>${ksh(l.stake)}</td></tr>`).join('')}</table></div>
+  <div class="row" style="margin-top:8px"><span class="pos"><b>${x.r.margin.toFixed(2)}%</b></span><span>Payout ${ksh(x.r.payout)}</span><span>Profit ${ksh(x.r.profit)}</span><span class="note">Verified ${new Date(x.t).toLocaleTimeString()}</span></div></div>`).join('')}
+
+/* Calculator */
+let CALC={total:10000,legs:[{sel:'',bookmaker:'',odds:'',min:'',max:''},{sel:'',bookmaker:'',odds:'',min:'',max:''}],special:false,confirmed:false};
+function vCalc(){
+ const legs=CALC.legs.map(l=>({sel:l.sel||'Outcome',bookmaker:l.bookmaker||'Bookmaker',odds:+l.odds,min:+l.min||0,max:+l.max||0}));
+ const r=arb(legs,+CALC.total||0);
+ let h=`<h2 style="font-size:26px;margin-bottom:10px">Profit calculator</h2><p class="note">Works for any number of outcomes. Enter real odds from the bookmakers, or open a market with &ldquo;Calculate stakes&rdquo; to fill them in.</p>
+ <div class="card"><label>Total investment (KSh)</label><input type="number" id="ctotal" min="0" value="${CALC.total}" style="max-width:240px">
+ <div style="margin-top:12px">${CALC.legs.map((l,i)=>`<div class="oc"><input data-l="${i}" data-f="sel" placeholder="Selection" value="${esc(l.sel)}"><input data-l="${i}" data-f="bookmaker" placeholder="Bookmaker" value="${esc(l.bookmaker)}"><input type="number" step="0.01" data-l="${i}" data-f="odds" placeholder="Odds" value="${l.odds}"><input type="number" data-l="${i}" data-f="min" placeholder="Min stake" value="${l.min}"><input type="number" data-l="${i}" data-f="max" placeholder="Max stake" value="${l.max}"><button class="chip" data-del="${i}" aria-label="Remove outcome">&times;</button></div>`).join('')}</div>
+ <div class="row"><button class="btn ghost" id="addleg">Add outcome</button></div>
+ <div style="margin-top:12px"><label><input type="checkbox" id="cspecial" style="width:auto" ${CALC.special?'checked':''}> This market can push, void or settle in halves (Asian lines, quarter lines)</label>
+ <label><input type="checkbox" id="cconf" style="width:auto" ${CALC.confirmed?'checked':''}> I confirmed same event, same line and same settlement rules at every bookmaker</label></div></div>`;
+ if(!r)return h+'<div class="empty"><b>Enter odds above 1.00 for at least two outcomes</b>Results appear here.</div>';
+ const st=CALC.special||!CALC.confirmed?'t':'v';
+ h+=`<div class="card"><div class="row" style="justify-content:space-between"><div><div class="note">Arbitrage margin</div><div class="big ${r.exists?'pos':'neg'}">${r.margin.toFixed(2)}%</div></div><span class="tag ${r.exists?st:'n'}">${!r.exists?'No arbitrage':st==='v'?'Verified (rules confirmed)':'Theoretical, not guaranteed'}</span></div>
+ <p class="note">Sum of 1/odds = ${r.inv.toFixed(4)} ${r.exists?'(below 1)':'(1 or more)'}</p>
+ <div class="tw"><table><tr><th>Selection</th><th>Bookmaker</th><th>Stake</th><th>Return</th><th></th></tr>${r.legs.map(l=>`<tr><td>${esc(l.sel)}</td><td>${esc(l.bookmaker)}</td><td>${ksh(l.stake)}</td><td>${ksh(l.ret)}</td><td class="neg note">${l.limit}</td></tr>`).join('')}</table></div>
+ <div class="grid" style="margin-top:12px"><div><div class="note">Total invested</div><b>${ksh(+CALC.total)}</b></div><div><div class="note">Expected return</div><b>${ksh(r.payout)}</b></div><div><div class="note">Expected profit</div><b class="${r.profit>=0?'pos':'neg'}">${ksh(r.profit)}</b></div><div><div class="note">Profit %</div><b class="${r.profit>=0?'pos':'neg'}">${r.pct.toFixed(2)}%</b></div></div>
+ ${r.exists&&st==='t'?'<p class="note" style="margin-top:10px">Theoretical result. A push, void or half-win can change the outcome, so do not treat it as guaranteed profit. Bookmakers can also change odds or limit stakes before you place bets.</p>':''}</div>`;
+ return h}
+
+function vAdmin(){
+ const books=Object.keys(S.cfg.bookmakers).sort();
+ return `<h2 style="font-size:26px;margin-bottom:10px">Settings</h2>
+ <div class="card"><h3>Refresh and thresholds</h3><div class="grid" style="margin-top:8px">
+ <div><label>Auto-refresh (seconds, 0 = off)</label><input type="number" id="arefresh" value="${S.cfg.refreshSecs}"></div>
+ <div><label>Odds freshness limit (seconds)</label><input type="number" id="afresh" value="${S.cfg.freshSecs}"></div>
+ <div><label>Minimum arbitrage threshold %</label><input type="number" step="0.1" id="amin" value="${S.cfg.minPct}"></div></div></div>
+ <div class="card"><h3>Sports availability</h3><p class="note">Sports appear here automatically when the API returns them.</p><div class="row">${S.sports.length?S.sports.map(s=>`<label style="display:flex;gap:6px;margin:0"><input type="checkbox" data-hs="${esc(s)}" style="width:auto" ${S.cfg.hiddenSports[s]?'':'checked'}>${esc(s)}</label>`).join(''):'<span class="note">No sports loaded yet.</span>'}</div></div>
+ <div class="card"><h3>Bookmakers</h3><p class="note">Discovered from the odds feed. Switch off any you do not want scanned.</p><div class="row">${books.length?books.map(b=>`<label style="display:flex;gap:6px;margin:0"><input type="checkbox" data-bk="${esc(b)}" style="width:auto" ${S.cfg.bookmakers[b]!==false?'checked':''}>${esc(b)}</label>`).join(''):'<span class="note">No bookmakers loaded yet.</span>'}</div></div>
+ <div class="card"><h3>Market categories</h3><div class="row">${S.events.length?cats(S.events.flatMap(e=>e.markets||[])).map(c=>`<span class="chip">${esc(c)}</span>`).join(''):'<span class="note">Generated from market data once loaded.</span>'}</div></div>
+ <div class="card"><h3>System log</h3><pre>${esc(S.logs.join('\n')||'No events yet.')}</pre></div>`}
+
+function vConnect(){
+ return `<h2 style="font-size:26px;margin-bottom:10px">Connection</h2>
+ <div class="card"><h3>Your backend</h3><p class="note">Your PropLine API key must stay on a server, never in this page. Run a small backend that holds the key, calls PropLine, and returns the data in the format below. Add new providers by writing another adapter on that server.</p>
+ <label style="margin-top:10px">Backend base URL</label><div class="row"><input id="base" style="flex:1" placeholder="Leave empty to call PropLine directly" value="${esc(S.cfg.base)}"><button class="btn" id="savebase">Save</button></div>
+ <p class="note" style="margin-top:8px">AmbrohSP will request <b>[base]/normalized</b>. This published preview may block calls to other sites, so use the file loader below to test, or host this file on your own domain.</p>
+ <div class="row" style="margin-top:8px"><button class="btn" id="refresh">Refresh now</button><label class="btn ghost" style="margin:0;color:var(--tx)">Load JSON file<input type="file" id="file" accept=".json" hidden></label></div></div>
+ <div class="card"><h3>Access key</h3><p class="note">The passphrase you set as APP_KEY on the server. It stops anyone else using your PropLine quota.</p><input id="akey" type="password" autocomplete="off" style="width:100%;margin-top:8px" value="${esc(S.cfg.key||'')}"></div>
+ <div class="card"><h3>Expected response</h3><p class="note">Your adapter should discover sports, events and markets with PropLine&rsquo;s own discovery endpoints (check their docs for the exact paths and parameters) and map them to:</p>
+<pre>{ "sports": ["..."],
+  "events": [{
+    "id": "...", "sport": "...", "competition": "...",
+    "name": "A vs B", "start": "ISO date", "live": false,
+    "markets": [{
+      "key": "provider market key", "name": "Display name",
+      "line": null, "settlement": "standard" | "special",
+      "outcomes": [{ "sel": "Selection",
+        "prices": [{ "bookmaker": "...", "price": 2.1,
+                     "updated": "ISO date" }] }]
+    }]
+  }] }</pre>
+ <p class="note">Mark any market with pushes, voids, half-wins or quarter lines as <b>special</b>. Those are shown as theoretical only. If your plan does not include a sport or market, leave it out; AmbrohSP will not fill gaps.</p></div>`}
+
+/* ---------- Render + events ---------- */
+const V={sports:vSports,event:vEvent,scanner:vScanner,calc:vCalc,admin:vAdmin,connect:vConnect};
+function render(){
+ $('nav').innerHTML=TABS.map(([k,n])=>`<button class="${S.view===k?'on':''}" data-go="${k}">${n}</button>`).join('');
+ $('dot').className='dot'+(S.events.length?' on':'');
+ $('st').textContent=S.events.length?`${S.events.length} events &middot; updated ${S.loadedAt.toLocaleTimeString()}`.replace('&middot;','·'):'No data source connected';
+ const keep=document.activeElement&&document.activeElement.id,pos=document.activeElement&&document.activeElement.selectionStart;
+ $('app').innerHTML=crumbs()+V[S.view]();
+ if(keep&&$(keep)){$(keep).focus();try{$(keep).setSelectionRange(pos,pos)}catch(e){}}}
+const go=v=>{S.view=v;render();window.scrollTo(0,0)};
+
+document.addEventListener('click',e=>{const t=e.target.closest('[data-go],[data-sport],[data-ev],[data-cat],[data-calc],[data-del],#refresh,#savebase,#addleg');if(!t)return;
+ if(t.dataset.go)return go(t.dataset.go);
+ if(t.dataset.sport){S.sport=t.dataset.sport;S.comp='all';return render()}
+ if(t.dataset.ev){S.eventId=t.dataset.ev;S.cat='All markets';S.marketIdx=null;return go('event')}
+ if(t.dataset.cat){S.cat=t.dataset.cat;return render()}
+ if(t.dataset.calc){const[id,i]=t.dataset.calc.split('|'),m=S.events.find(x=>x.id===id).markets[+i];
+  CALC.legs=m.outcomes.map(o=>{const p=[...o.prices].sort((a,b)=>b.price-a.price)[0];return{sel:o.sel,bookmaker:p.bookmaker,odds:p.price,min:'',max:''}});
+  CALC.special=m.settlement!=='standard';CALC.confirmed=!CALC.special;S.marketIdx=+i;return go('calc')}
+ if(t.dataset.del){if(CALC.legs.length>2){CALC.legs.splice(+t.dataset.del,1);render()}return}
+ if(t.id==='refresh')return load();
+ if(t.id==='addleg'){CALC.legs.push({sel:'',bookmaker:'',odds:'',min:'',max:''});return render()}
+ if(t.id==='savebase'){grab();log('Connection saved');return alert('Saved.')}});
+
+document.addEventListener('input',e=>{const t=e.target,d=t.dataset;
+ if(t.id==='q'){S.q=t.value;return render()}
+ if(d.l!==undefined){CALC.legs[+d.l][d.f]=t.value;return render()}
+ if(t.id==='ctotal'){CALC.total=t.value;return render()}
+ if(t.id==='smin'){S.scan.minPct=+t.value||0;return render()}
+ if(t.id==='arefresh'){S.cfg.refreshSecs=+t.value||0;save();return setTimer()}
+ if(t.id==='afresh'){S.cfg.freshSecs=Math.max(1,+t.value||60);save()}
+ if(t.id==='amin'){S.cfg.minPct=+t.value||0;save()}});
+
+document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
+ if(t.id==='comp'){S.comp=t.value;return render()}
+ if(t.id==='ssport'){S.sport=t.value;return render()}
+ if(t.id==='sbook'){S.scan.book=t.value;return render()}
+ if(t.id==='scat'){S.scan.cat=t.value;return render()}
+ if(t.id==='ssort'){S.scan.sort=t.value;return render()}
+ if(t.id==='cspecial'){CALC.special=t.checked;return render()}
+ if(t.id==='cconf'){CALC.confirmed=t.checked;return render()}
+ if(d.hs){S.cfg.hiddenSports[d.hs]=!t.checked;save();log('Sport '+d.hs+(t.checked?' shown':' hidden'))}
+ if(d.bk){S.cfg.bookmakers[d.bk]=t.checked;save();log('Bookmaker '+d.bk+(t.checked?' on':' off'))}
+ if(t.id==='file'&&t.files[0]){const fr=new FileReader();fr.onload=()=>{try{ingest(JSON.parse(fr.result));go('sports')}catch(x){alert('That file is not valid JSON in the expected format.')}};fr.readAsText(t.files[0])}});
+
+let timer;function setTimer(){clearInterval(timer);if(S.cfg.refreshSecs>0)timer=setInterval(load,Math.max(300,S.cfg.refreshSecs)*1000)}
+const dm=window.matchMedia('(prefers-color-scheme: dark)');
+const isDark=()=>S.cfg.theme==='dark'||(S.cfg.theme!=='light'&&dm.matches);
+function applyTheme(){document.documentElement.dataset.theme=S.cfg.theme==='auto'?'':S.cfg.theme;$('theme').textContent=isDark()?'Light mode':'Dark mode'}
+$('theme').onclick=()=>{S.cfg.theme=isDark()?'light':'dark';save();applyTheme()};
+dm.addEventListener('change',applyTheme);
+applyTheme();
+setTimer();render();load();
+</script>
+</body>
+</html>
