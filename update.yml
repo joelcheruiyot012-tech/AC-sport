@@ -1,0 +1,121 @@
+name: Update odds
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: update-odds
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Fetch odds
+        env:
+          PROPLINE_KEY: ${{ secrets.PROPLINE_KEY }}
+        run: |
+          cat > fetch.js <<'JSEOF'
+          // Fetches odds from PropLine and writes normalized.json in the shape index.html expects.
+          // Runs in GitHub Actions (Node 20+, built-in fetch). The key comes from the PROPLINE_KEY secret.
+          const fs = require('fs');
+
+          const KEY = process.env.PROPLINE_KEY;
+          const BASE = (process.env.PROPLINE_BASE || 'https://api.prop-line.com/v1').replace(/\/$/, '');
+          const SPORTS = (process.env.SPORTS || 'soccer_epl,basketball_nba,tennis').split(',').map(s => s.trim()).filter(Boolean);
+          const MARKETS = process.env.MARKETS || 'h2h,spreads,totals';
+
+          if (!KEY) { console.error('Missing PROPLINE_KEY secret'); process.exit(1); }
+
+          async function get(path, params = {}) {
+            const url = new URL(BASE + path);
+            Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+            const r = await fetch(url, { headers: { 'X-API-Key': KEY } });
+            console.log(`${r.status} ${path} (remaining today: ${r.headers.get('X-Daily-Remaining')})`);
+            if (!r.ok) throw new Error(`HTTP ${r.status} for ${path}`);
+            return r.json();
+          }
+
+          // A line with pushes/voids (whole or quarter numbers) cannot be a guaranteed arb -> "special" (theoretical only)
+          const isSpecial = (point) => point != null && (Number.isInteger(point) || Math.abs(point * 4 % 2) === 1);
+
+          function normalizeEvent(ev, sportTitle) {
+            const groups = new Map(); // market key + line -> { key, name, line, outcomes: Map }
+            for (const bk of ev.bookmakers || []) {
+              for (const m of bk.markets || []) {
+                for (const o of m.outcomes || []) {
+                  const line = o.point ?? null;
+                  // spreads: line sign flips per team, so group by absolute value
+                  const gl = m.key === 'spreads' && line != null ? Math.abs(line) : line;
+                  const gk = `${m.key}|${gl}`;
+                  if (!groups.has(gk)) groups.set(gk, { key: m.key, name: m.key, line: gl, outcomes: new Map() });
+                  const g = groups.get(gk);
+                  const sel = [o.description, o.name, m.key === 'totals' || m.key === 'spreads' ? '' : ''].filter(Boolean).join(' ')
+                    + (m.key === 'spreads' && line != null ? ` (${line > 0 ? '+' : ''}${line})` : '');
+                  if (!g.outcomes.has(sel)) g.outcomes.set(sel, []);
+                  g.outcomes.get(sel).push({ bookmaker: bk.title || bk.key, price: o.price, updated: bk.last_update || m.last_update || new Date().toISOString() });
+                }
+              }
+            }
+            const markets = [];
+            for (const g of groups.values()) {
+              if (g.outcomes.size < 2) continue;
+              const label = { h2h: 'Match winner', spreads: 'Handicap', totals: 'Total' }[g.key] || g.key.replace(/_/g, ' ');
+              markets.push({
+                key: g.key,
+                name: g.line != null ? `${label} ${g.line}` : label,
+                line: g.line,
+                settlement: isSpecial(g.line) ? 'special' : 'standard',
+                outcomes: [...g.outcomes].map(([sel, prices]) => ({ sel, prices })),
+              });
+            }
+            return {
+              id: String(ev.id),
+              sport: sportTitle,
+              competition: sportTitle,
+              name: ev.away_team && ev.home_team ? `${ev.home_team} vs ${ev.away_team}` : (ev.name || String(ev.id)),
+              start: ev.commence_time,
+              live: ev.commence_time ? new Date(ev.commence_time) <= new Date() : false,
+              markets,
+            };
+          }
+
+          (async () => {
+            const limitations = [];
+            const events = [];
+            let titles = {};
+            try { (await get('/sports')).forEach(s => titles[s.key] = s.title); } catch (e) { limitations.push('Sport list unavailable: ' + e.message); }
+
+            for (const sport of SPORTS) {
+              try {
+                const data = await get(`/sports/${sport}/odds`, { markets: MARKETS });
+                const list = Array.isArray(data) ? data : (data.events || []);
+                list.forEach(ev => events.push(normalizeEvent(ev, titles[sport] || sport)));
+              } catch (e) {
+                console.error(`Skipping ${sport}: ${e.message}`);
+                limitations.push(`${sport} skipped: ${e.message}`);
+              }
+            }
+
+            if (!events.length && fs.existsSync('normalized.json')) {
+              console.error('No events fetched; keeping previous normalized.json');
+              process.exit(0);
+            }
+            const out = { generatedAt: new Date().toISOString(), sports: [...new Set(events.map(e => e.sport))], events, limitations };
+            fs.writeFileSync('normalized.json', JSON.stringify(out));
+            console.log(`Wrote ${events.length} events`);
+          })();
+          JSEOF
+          node fetch.js
+          rm fetch.js
+      - name: Commit if changed
+        run: |
+          git config user.name "odds-bot"
+          git config user.email "odds-bot@users.noreply.github.com"
+          git add normalized.json
+          git diff --cached --quiet || (git commit -m "Update odds" && git push)
